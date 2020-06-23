@@ -1,0 +1,87 @@
+# BiomapasContinuousSubprocess
+
+A helper package that lets you execute long running processes
+and continuously receive their output.
+
+#### Description
+
+Imagine you want to programmatically run a command that lists objects
+in a given directory. The command `subprocess.call('ls')` will do the 
+trick quite conveniently. However, the same approach to long running
+commands like `cdk deploy *` or `pytest -s` or `ls / -R` is not very
+convenient as you get the whole output only when the process finishes.
+This package solves this inconvenience by outputting data in real-time
+as the process runs.
+
+#### Remarks
+
+[Biomapas](https://biomapas.com) aims to modernise life-science 
+industry by sharing its IT knowledge with other companies and 
+the community. This is an open source library intended to be used 
+by anyone. Improvements and pull requests are welcome.
+
+#### Related technology
+
+- Python 3
+- Python subprocess Popen
+- OS processes
+
+#### Assumptions
+
+The project assumes the following:
+
+- You have basic knowledge in python programming.
+- You have basic knowledge in OS processes.
+
+#### Useful sources
+
+- Read more about python subprocess:<br>
+https://docs.python.org/3/library/subprocess.html.
+
+- Read more about python subprocess "Popen" specifically:<br>
+https://docs.python.org/3/library/subprocess.html#popen-objects
+
+#### Install
+
+The project is built and uploaded to PyPi. Install it by using pip.
+
+```bash
+pip install biomapas-continuous-subprocess
+```
+
+Or directly install it through source.
+
+```bash
+pip install .
+```
+
+#### Examples
+
+```python
+from biomapas_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
+
+command = str('cdk deploy *')
+generator = ContinuousSubprocess(command).execute()
+
+for data in generator:
+    print(data)
+```
+
+#### Testing
+
+The project has tests that can be run. 
+These are mostly simple tests that can be run out-of-the-box.
+
+Run tests from a root directory with `pytest` python testing library:
+```bash
+pytest
+```
+
+The tests usually take less than a few seconds to complete.
+
+#### Contribution
+
+Found a bug? Want to add or suggest a new feature?<br>
+Contributions of any kind are gladly welcome. You may contact us 
+directly, create a pull-request or an issue in github platform.
+Lets modernize the world together.
