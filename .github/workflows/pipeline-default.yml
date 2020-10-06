@@ -12,7 +12,7 @@ on:
     - '*'
 
 jobs:
-  install-and-test:
+  install-test:
     runs-on: ubuntu-latest
     container: nikolaik/python-nodejs:python3.8-nodejs14
 
@@ -21,10 +21,8 @@ jobs:
 
       - name: Install
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install . --upgrade
-          pip list
+          python -m pip install . --upgrade
+          python -m pip list
 
       - name: Test
-        run: pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
+        run: python -m pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
