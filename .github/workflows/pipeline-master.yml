@@ -25,7 +25,9 @@ jobs:
           python -m pip list
 
       - name: Test
-        run: python -m pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
+        run: |
+          source venv/bin/activate
+          python -m pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
 
       - uses: actions/upload-artifact@v2
         with:
@@ -46,11 +48,17 @@ jobs:
 
       - name: Install
         run: |
+          source venv/bin/activate
           pip install wheel
           pip install twine
 
       - name: Build
-        run: python setup.py sdist bdist_wheel
+        source venv/bin/activate
+        run: |
+          source venv/bin/activate
+          python setup.py sdist bdist_wheel
 
       - name: Upload
-        run: twine upload dist/* -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          source venv/bin/activate
+          twine upload dist/* -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
