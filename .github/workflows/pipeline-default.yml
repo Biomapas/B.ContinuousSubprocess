@@ -6,9 +6,10 @@ defaults:
 
 on:
   push:
-    branches: [ master ]
+    branches-ignore:
+      - master
   pull_request:
-    branches: [ master ]
+    - '*'
 
 jobs:
   install-and-test:
@@ -20,7 +21,9 @@ jobs:
 
       - name: Install
         run: |
-          echo Using python: $( python --version )
           python -m venv venv
           source venv/bin/activate
           pip install . --upgrade
+
+      - name: Test
+        run: pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80

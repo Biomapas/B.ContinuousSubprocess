@@ -1,4 +1,4 @@
-from biomapas_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
+from b_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
 
 
 def test_subprocess_output() -> None:

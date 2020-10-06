@@ -58,7 +58,7 @@ pip install .
 #### Examples
 
 ```python
-from biomapas_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
+from b_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
 
 command = str('cdk deploy *')
 generator = ContinuousSubprocess(command).execute()

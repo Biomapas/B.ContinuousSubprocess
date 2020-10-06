@@ -1,2 +1,2 @@
 include LICENSE
-recursive-include biomapas_continuous_subprocess *.py
+recursive-include b_continuous_subprocess *.py
