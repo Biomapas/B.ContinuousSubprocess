@@ -19,17 +19,17 @@ jobs:
 
       - name: Install
         run: |
-          python -m pip install . --upgrade
-          python -m pip list
+          pip install . --upgrade
+          pip list
 
       - name: Test
-        run: python -m pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
+        run: pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
 
       - name: Install
-        run: python -m pip install wheel twine
+        run: pip install wheel twine
 
       - name: Build
         run: python setup.py sdist bdist_wheel
 
       - name: Upload
-        run: python -m twine upload dist/* -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/* -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}

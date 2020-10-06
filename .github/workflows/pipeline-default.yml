@@ -8,8 +8,6 @@ on:
   push:
     branches-ignore:
       - master
-  pull_request:
-    - '*'
 
 jobs:
   install-test:
@@ -21,8 +19,8 @@ jobs:
 
       - name: Install
         run: |
-          python -m pip install . --upgrade
-          python -m pip list
+          pip install . --upgrade
+          pip list
 
       - name: Test
-        run: python -m pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
+        run: pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
