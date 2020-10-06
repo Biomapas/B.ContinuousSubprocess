@@ -1,4 +1,4 @@
-name: CI
+name: Pipeline
 
 on:
   push:
@@ -7,16 +7,15 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  install-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Test
-        run: echo Test!
-
-      - name: Test2
+      - name: Install
         run: |
-          echo Test1
-          echo Test2
+          echo Using python: $( python --version )
+          python -m venv venv
+          source venv/bin/activate
+          pip install . --upgrade
