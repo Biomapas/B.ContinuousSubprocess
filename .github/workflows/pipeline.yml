@@ -8,7 +8,7 @@ on:
 
 jobs:
   install-and-test:
-    runs-on: ubuntu-latest
+    runs-on: nikolaik/python-nodejs:python3.8-nodejs14
 
     steps:
       - uses: actions/checkout@v2
