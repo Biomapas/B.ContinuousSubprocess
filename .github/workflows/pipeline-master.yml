@@ -22,6 +22,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install . --upgrade
+          pip list
 
       - name: Test
         run: pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
@@ -32,6 +33,7 @@ jobs:
           path: venv
 
   build-and-push:
+    needs: install-and-test
     runs-on: ubuntu-latest
     container: nikolaik/python-nodejs:python3.8-nodejs14
 
