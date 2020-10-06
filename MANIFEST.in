@@ -1,2 +1,6 @@
+include VERSION
 include LICENSE
+include README.md
+include HISTORY.md
+
 recursive-include b_continuous_subprocess *.py

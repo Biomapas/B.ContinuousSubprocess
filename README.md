@@ -1,4 +1,4 @@
-# BiomapasContinuousSubprocess
+# B.ContinuousSubprocess
 
 A helper package that lets you execute long running processes
 and continuously receive their output.
@@ -45,17 +45,21 @@ https://docs.python.org/3/library/subprocess.html#popen-objects
 
 The project is built and uploaded to PyPi. Install it by using pip.
 
-```bash
-pip install biomapas-continuous-subprocess
+```
+pip install b-continuous-subprocess
 ```
 
 Or directly install it through source.
 
-```bash
+```
 pip install .
 ```
 
-#### Examples
+### Usage & Examples
+
+The library is extremely easy to use. Simply create an instance of 
+`ContinuousSubprocess` and execute it to get a generator. Then iterate
+through the generator to receive your process output in real time.
 
 ```python
 from b_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
@@ -73,7 +77,7 @@ The project has tests that can be run.
 These are mostly simple tests that can be run out-of-the-box.
 
 Run tests from a root directory with `pytest` python testing library:
-```bash
+```
 pytest
 ```
 
