@@ -1,0 +1,8 @@
+[FORMAT]
+# Respecting black: https://black.readthedocs.io/en/stable/the_black_code_style.html#line-length
+max-line-length=88
+
+[MESSAGES CONTROL]
+# Disabling E1136 due to bug: https://github.com/PyCQA/pylint/issues/3882
+# Disabling W1113 due to bug: https://github.com/PyCQA/pylint/issues/2481
+disable=E1136, W1113

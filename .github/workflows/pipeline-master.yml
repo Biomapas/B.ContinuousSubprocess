@@ -17,6 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Codelint
+        run: |
+          pip install black
+          black . -S --check || exit 1
+
+          pip install pylint
+          pylint b_continuous_subprocess --fail-under 8 || exit 1
+
       - name: Install
         run: |
           pip install . --upgrade

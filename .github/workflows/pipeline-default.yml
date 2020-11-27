@@ -12,10 +12,18 @@ on:
 jobs:
   install-test:
     runs-on: ubuntu-latest
-    container: nikolaik/python-nodejs:python3.8-nodejs14
+    container: biomapas/cicd-full:0.0.2
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Codelint
+        run: |
+          pip install black
+          black . -S --check || exit 1
+
+          pip install pylint
+          pylint b_continuous_subprocess --fail-under 8 || exit 1
 
       - name: Install
         run: |

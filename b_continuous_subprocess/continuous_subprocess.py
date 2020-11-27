@@ -1,11 +1,17 @@
+"""
+Module for continuous subprocess management.
+"""
+
 import subprocess
 from typing import Generator, Optional
 
 
 class ContinuousSubprocess:
     """
-    Creates a process to execute a wanted command and yields a continuous output stream for consumption.
+    Creates a process to execute a wanted command and
+    yields a continuous output stream for consumption.
     """
+
     def __init__(self, command_string: str) -> None:
         """
         Constructor.
@@ -14,11 +20,23 @@ class ContinuousSubprocess:
         """
         self.__command_string = command_string
 
-    def execute(self, shell: bool = True, path: Optional[str] = None, *args, **kwargs) -> Generator[str, None, None]:
+    @property
+    def command_string(self) -> str:
+        """
+        Property for command string.
+
+        :return: Command string.
+        """
+        return self.__command_string
+
+    def execute(
+        self, shell: bool = True, path: Optional[str] = None, *args, **kwargs
+    ) -> Generator[str, None, None]:
         """
         Executes a command and yields a continuous output from the process.
 
-        :param shell: Boolean value to specify whether to execute command in a new shell.
+        :param shell: Boolean value to specify whether to
+        execute command in a new shell.
         :param path: Path where the command should be executed.
         :param args: Other arguments.
         :param kwargs: Other named arguments.
@@ -35,7 +53,7 @@ class ContinuousSubprocess:
             **kwargs
         )
 
-        for stdout_line in iter(process.stdout.readline, ""):
+        for stdout_line in iter(process.stdout.readline, ''):
             yield stdout_line
 
         process.stdout.close()
