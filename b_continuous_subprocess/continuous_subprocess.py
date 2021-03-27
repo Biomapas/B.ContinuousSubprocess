@@ -52,7 +52,9 @@ class ContinuousSubprocess:
         """
         # Check if the process is already running (if it's set, then it means it is running).
         if self.__process:
-            raise RuntimeError('Process is already running. To run multiple processes initialize a second object.')
+            raise RuntimeError(
+                'Process is already running. To run multiple processes initialize a second object.'
+            )
 
         process = subprocess.Popen(
             self.__command_string,
