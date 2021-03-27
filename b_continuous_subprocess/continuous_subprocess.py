@@ -19,6 +19,7 @@ class ContinuousSubprocess:
         :param command_string: A command to execute in a separate process.
         """
         self.__command_string = command_string
+        self.__process: Optional[subprocess.Popen] = None
 
     @property
     def command_string(self) -> str:
@@ -28,6 +29,12 @@ class ContinuousSubprocess:
         :return: Command string.
         """
         return self.__command_string
+
+    def terminate(self) -> None:
+        if not self.__process:
+            raise ValueError('Process is not running.')
+
+        self.__process.terminate()
 
     def execute(
         self, shell: bool = True, path: Optional[str] = None, *args, **kwargs
@@ -43,6 +50,10 @@ class ContinuousSubprocess:
 
         :return: A generator which yields output strings from an opened process.
         """
+        # Check if the process is already running (if it's set, then it means it is running).
+        if self.__process:
+            raise RuntimeError('Process is already running. To run multiple processes initialize a second object.')
+
         process = subprocess.Popen(
             self.__command_string,
             stdout=subprocess.PIPE,
@@ -53,11 +64,17 @@ class ContinuousSubprocess:
             **kwargs
         )
 
+        # Indicate that the process has started and is now running.
+        self.__process = process
+
         for stdout_line in iter(process.stdout.readline, ''):
             yield stdout_line
 
         process.stdout.close()
         return_code = process.wait()
+
+        # Indicate that the process has finished as is no longer running.
+        self.__process = None
 
         if return_code:
             raise subprocess.CalledProcessError(return_code, self.__command_string)

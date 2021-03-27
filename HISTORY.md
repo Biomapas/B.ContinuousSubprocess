@@ -1,5 +1,8 @@
 # Release history
 
+### 0.1.0
+* Add ability to kill a process.
+
 ### 0.0.3
 * Start using Pylint.
 * Start using Black.
