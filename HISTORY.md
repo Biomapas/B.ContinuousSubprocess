@@ -1,5 +1,8 @@
 # Release history
 
+### 0.1.1
+* Pipe errors too.
+
 ### 0.1.0
 * Add ability to kill a process.
 
