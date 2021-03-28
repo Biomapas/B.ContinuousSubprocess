@@ -77,11 +77,15 @@ class ContinuousSubprocess:
         q = Queue()
 
         # Create a parallel thread that will read stdout stream.
-        stdout_thread = Thread(target=ContinuousSubprocess.__read_stream, args=[process.stdout, q])
+        stdout_thread = Thread(
+            target=ContinuousSubprocess.__read_stream, args=[process.stdout, q]
+        )
         stdout_thread.start()
 
         # Create a parallel thread that will read stderr stream.
-        stderr_thread = Thread(target=ContinuousSubprocess.__read_stream, args=[process.stderr, q])
+        stderr_thread = Thread(
+            target=ContinuousSubprocess.__read_stream, args=[process.stderr, q]
+        )
         stderr_thread.start()
 
         # Run this block as long as our main process is alive.
