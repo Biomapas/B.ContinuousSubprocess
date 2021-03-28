@@ -1,5 +1,8 @@
 # Release history
 
+### 0.1.2
+* Rethink the way stdout and stderr are yielded.
+
 ### 0.1.1
 * Pipe errors too.
 

@@ -3,7 +3,9 @@ Module for continuous subprocess management.
 """
 
 import subprocess
-from typing import Generator, Optional
+from queue import Queue, Empty
+from threading import Thread
+from typing import Generator, Optional, IO, AnyStr
 
 
 class ContinuousSubprocess:
@@ -53,7 +55,8 @@ class ContinuousSubprocess:
         # Check if the process is already running (if it's set, then it means it is running).
         if self.__process:
             raise RuntimeError(
-                'Process is already running. To run multiple processes initialize a second object.'
+                'Process is already running. '
+                'To run multiple processes initialize a second object.'
             )
 
         process = subprocess.Popen(
@@ -70,14 +73,40 @@ class ContinuousSubprocess:
         # Indicate that the process has started and is now running.
         self.__process = process
 
-        for stdout_line in iter(process.stdout.readline, ''):
-            yield stdout_line
+        # Initialize a mutual que that will hold stdout and stderr messages.
+        q = Queue()
 
-        process.stdout.close()
-        return_code = process.wait()
+        # Create a parallel thread that will read stdout stream.
+        stdout_thread = Thread(target=ContinuousSubprocess.__read_stream, args=[process.stdout, q])
+        stdout_thread.start()
+
+        # Create a parallel thread that will read stderr stream.
+        stderr_thread = Thread(target=ContinuousSubprocess.__read_stream, args=[process.stderr, q])
+        stderr_thread.start()
+
+        # Run this block as long as our main process is alive.
+        while process.poll() is None:
+            try:
+                # Rad messages produced by stdout and stderr threads.
+                item = q.get(block=True, timeout=1)
+                yield item
+            except Empty:
+                pass
+
+        return_code = process.poll()
+
+        # Make sure both threads have finished.
+        stdout_thread.join(timeout=1)
+        stderr_thread.join(timeout=1)
 
         # Indicate that the process has finished as is no longer running.
         self.__process = None
 
         if return_code:
             raise subprocess.CalledProcessError(return_code, self.__command_string)
+
+    @staticmethod
+    def __read_stream(stream: IO[AnyStr], queue: Queue):
+        for line in iter(stream.readline, ''):
+            if line != '':
+                queue.put(line)
