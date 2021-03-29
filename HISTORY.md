@@ -1,5 +1,8 @@
 # Release history
 
+### 0.2.0
+* Add stack trace when the error has happened.
+
 ### 0.1.2
 * Rethink the way stdout and stderr are yielded.
 

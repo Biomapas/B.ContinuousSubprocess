@@ -1,8 +1,9 @@
 """
 Module for continuous subprocess management.
 """
-
+import json
 import subprocess
+from collections import deque
 from queue import Queue, Empty
 from threading import Thread
 from typing import Generator, Optional, IO, AnyStr
@@ -22,6 +23,7 @@ class ContinuousSubprocess:
         """
         self.__command_string = command_string
         self.__process: Optional[subprocess.Popen] = None
+        self.__max_error_trace_lines = 1000
 
     @property
     def command_string(self) -> str:
@@ -73,8 +75,10 @@ class ContinuousSubprocess:
         # Indicate that the process has started and is now running.
         self.__process = process
 
-        # Initialize a mutual que that will hold stdout and stderr messages.
+        # Initialize a mutual queue that will hold stdout and stderr messages.
         q = Queue()
+        # Initialize a limited queue to hold last N of lines.
+        dq = deque(maxlen=self.__max_error_trace_lines)
 
         # Create a parallel thread that will read stdout stream.
         stdout_thread = Thread(
@@ -93,6 +97,7 @@ class ContinuousSubprocess:
             try:
                 # Rad messages produced by stdout and stderr threads.
                 item = q.get(block=True, timeout=1)
+                dq.append(item)
                 yield item
             except Empty:
                 pass
@@ -107,7 +112,17 @@ class ContinuousSubprocess:
         self.__process = None
 
         if return_code:
-            raise subprocess.CalledProcessError(return_code, self.__command_string)
+            error_trace = list(dq)
+            raise subprocess.CalledProcessError(
+                returncode=return_code,
+                cmd=self.__command_string,
+                output=json.dumps({
+                    'message': 'An error has occurred while running the specified command.',
+                    'trace': error_trace,
+                    'trace_size': len(error_trace),
+                    'max_trace_size': self.__max_error_trace_lines
+                })
+            )
 
     @staticmethod
     def __read_stream(stream: IO[AnyStr], queue: Queue):

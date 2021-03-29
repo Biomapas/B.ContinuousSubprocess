@@ -64,11 +64,43 @@ through the generator to receive your process output in real time.
 ```python
 from b_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
 
-command = str('cdk deploy *')
+command = 'cdk deploy *'
 generator = ContinuousSubprocess(command).execute()
 
 for data in generator:
-    print(data)
+    print(data, end='')
+```
+
+Example how to handle errors:
+
+```python
+import json
+import subprocess
+
+from b_continuous_subprocess.continuous_subprocess import ContinuousSubprocess
+
+continuous_process = ContinuousSubprocess('cdk deploy *')
+generator = continuous_process.execute()
+
+try:
+    for line in generator:
+        print(line, end='')
+except subprocess.CalledProcessError as ex:
+    error_output = json.loads(ex.output)
+    
+    # Error message.
+    message = error_output['message']
+    # Stack trace.
+    trace = error_output['trace']
+    # The length of a stack trace (in lines).
+    trace_size = error_output['trace_size']
+    # The maximum possible (allowed) length of a stack trace.
+    max_trace_size = error_output['max_trace_size']
+    
+    print(message)
+    
+    for line in trace:
+        print(line, end='')
 ```
 
 #### Testing
