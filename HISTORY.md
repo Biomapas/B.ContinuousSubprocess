@@ -1,5 +1,8 @@
 # Release history
 
+### 0.2.1
+* Deleted all .idea files from the project.
+
 ### 0.2.0
 * Add stack trace when the error has happened.
 
