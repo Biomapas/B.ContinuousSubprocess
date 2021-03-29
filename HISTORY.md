@@ -1,5 +1,8 @@
 # Release history
 
+### 0.3.0
+* Add ability to control stack trace size.
+
 ### 0.2.1
 * Deleted all .idea files from the project.
 

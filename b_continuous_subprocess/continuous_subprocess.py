@@ -23,7 +23,6 @@ class ContinuousSubprocess:
         """
         self.__command_string = command_string
         self.__process: Optional[subprocess.Popen] = None
-        self.__max_error_trace_lines = 1000
 
     @property
     def command_string(self) -> str:
@@ -41,7 +40,12 @@ class ContinuousSubprocess:
         self.__process.terminate()
 
     def execute(
-        self, shell: bool = True, path: Optional[str] = None, *args, **kwargs
+        self,
+        shell: bool = True,
+        path: Optional[str] = None,
+        max_error_trace_lines: int = 1000,
+        *args,
+        **kwargs
     ) -> Generator[str, None, None]:
         """
         Executes a command and yields a continuous output from the process.
@@ -49,6 +53,7 @@ class ContinuousSubprocess:
         :param shell: Boolean value to specify whether to
         execute command in a new shell.
         :param path: Path where the command should be executed.
+        :param max_error_trace_lines: Maximum lines to return in case of an error.
         :param args: Other arguments.
         :param kwargs: Other named arguments.
 
@@ -78,7 +83,7 @@ class ContinuousSubprocess:
         # Initialize a mutual queue that will hold stdout and stderr messages.
         q = Queue()
         # Initialize a limited queue to hold last N of lines.
-        dq = deque(maxlen=self.__max_error_trace_lines)
+        dq = deque(maxlen=max_error_trace_lines)
 
         # Create a parallel thread that will read stdout stream.
         stdout_thread = Thread(
@@ -121,7 +126,7 @@ class ContinuousSubprocess:
                         'message': 'An error has occurred while running the specified command.',
                         'trace': error_trace,
                         'trace_size': len(error_trace),
-                        'max_trace_size': self.__max_error_trace_lines,
+                        'max_trace_size': max_error_trace_lines,
                     }
                 ),
             )
