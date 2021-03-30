@@ -1,5 +1,10 @@
 # Release history
 
+### 0.3.2
+* More logging.
+* More debugging.
+* Fix an actual bug where the std streams que might be empty.
+
 ### 0.3.1
 * Cleanup process.
 

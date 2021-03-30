@@ -26,13 +26,10 @@ def test_subprocess_error() -> None:
 
         assert message == 'An error has occurred while running the specified command.'
         assert max_trace_size == 1000
+        assert len(trace) > 0
+        assert trace_size > 0
 
-        # This project (as of this commit) is being hosted in Github.
-        # Github somehow magically handles stdout/stderr by itself, hence
-        # our processes can't yield anything. This is definitely a
-        # serious issue that needs to be resolved.
-        # assert len(trace) > 0
-        # assert trace_size > 0
+        print(f'For debug reasons, printing stack error trace: {trace}.', flush=True)
 
         return
 

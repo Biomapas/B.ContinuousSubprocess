@@ -2,11 +2,14 @@
 Module for continuous subprocess management.
 """
 import json
+import logging
 import subprocess
 from collections import deque
 from queue import Queue, Empty
 from threading import Thread
 from typing import Generator, Optional, IO, AnyStr
+
+logger = logging.getLogger(__name__)
 
 
 class ContinuousSubprocess:
@@ -76,6 +79,8 @@ class ContinuousSubprocess:
             *args,
             **kwargs
         ) as process:
+            logger.info(f'Successfully started the process to run "{self.__command_string}" command.')
+
             # Indicate that the process has started and is now running.
             self.__process = process
 
@@ -96,8 +101,10 @@ class ContinuousSubprocess:
             )
             stderr_thread.start()
 
-            # Run this block as long as our main process is alive.
-            while process.poll() is None:
+            logger.info('Successfully started threads to capture stdout and stderr streams.')
+
+            # Run this block as long as our main process is alive or std streams queue is not empty.
+            while (process.poll() is None) or (not q.empty()):
                 try:
                     # Rad messages produced by stdout and stderr threads.
                     item = q.get(block=True, timeout=1)
@@ -147,4 +154,5 @@ class ContinuousSubprocess:
                     queue.put(line)
         # It is possible to receive: ValueError: I/O operation on closed file.
         except ValueError:
+            logger.exception('Got error while reading from a process stream.')
             return
