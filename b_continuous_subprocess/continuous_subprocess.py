@@ -112,9 +112,14 @@ class ContinuousSubprocess:
 
             return_code = process.wait()
 
-            # Make sure both threads have finished.
-            stdout_thread.join(timeout=1)
-            stderr_thread.join(timeout=1)
+        # Make sure both threads have finished.
+        stdout_thread.join(timeout=5)
+        if stdout_thread.is_alive():
+            raise RuntimeError('Stdout thread is still alive!')
+
+        stderr_thread.join(timeout=5)
+        if stderr_thread.is_alive():
+            raise RuntimeError('Stderr thread is still alive!')
 
         # Indicate that the process has finished as is no longer running.
         self.__process = None
@@ -136,6 +141,10 @@ class ContinuousSubprocess:
 
     @staticmethod
     def __read_stream(stream: IO[AnyStr], queue: Queue):
-        for line in iter(stream.readline, ''):
-            if line != '':
-                queue.put(line)
+        try:
+            for line in iter(stream.readline, ''):
+                if line != '':
+                    queue.put(line)
+        # It is possible to receive: ValueError: I/O operation on closed file.
+        except ValueError:
+            return
