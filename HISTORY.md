@@ -1,5 +1,8 @@
 # Release history
 
+### 0.3.1
+* Cleanup process.
+
 ### 0.3.0
 * Add ability to control stack trace size.
 

@@ -66,7 +66,7 @@ class ContinuousSubprocess:
                 'To run multiple processes initialize a second object.'
             )
 
-        process = subprocess.Popen(
+        with subprocess.Popen(
             self.__command_string,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -75,43 +75,46 @@ class ContinuousSubprocess:
             cwd=path,
             *args,
             **kwargs
-        )
+        ) as process:
+            # Indicate that the process has started and is now running.
+            self.__process = process
 
-        # Indicate that the process has started and is now running.
-        self.__process = process
+            # Initialize a mutual queue that will hold stdout and stderr messages.
+            q = Queue()
+            # Initialize a limited queue to hold last N of lines.
+            dq = deque(maxlen=max_error_trace_lines)
 
-        # Initialize a mutual queue that will hold stdout and stderr messages.
-        q = Queue()
-        # Initialize a limited queue to hold last N of lines.
-        dq = deque(maxlen=max_error_trace_lines)
+            # Create a parallel thread that will read stdout stream.
+            stdout_thread = Thread(
+                target=ContinuousSubprocess.__read_stream, args=[process.stdout, q]
+            )
+            stdout_thread.start()
 
-        # Create a parallel thread that will read stdout stream.
-        stdout_thread = Thread(
-            target=ContinuousSubprocess.__read_stream, args=[process.stdout, q]
-        )
-        stdout_thread.start()
+            # Create a parallel thread that will read stderr stream.
+            stderr_thread = Thread(
+                target=ContinuousSubprocess.__read_stream, args=[process.stderr, q]
+            )
+            stderr_thread.start()
 
-        # Create a parallel thread that will read stderr stream.
-        stderr_thread = Thread(
-            target=ContinuousSubprocess.__read_stream, args=[process.stderr, q]
-        )
-        stderr_thread.start()
+            # Run this block as long as our main process is alive.
+            while process.poll() is None:
+                try:
+                    # Rad messages produced by stdout and stderr threads.
+                    item = q.get(block=True, timeout=1)
+                    dq.append(item)
+                    yield item
+                except Empty:
+                    pass
 
-        # Run this block as long as our main process is alive.
-        while process.poll() is None:
-            try:
-                # Rad messages produced by stdout and stderr threads.
-                item = q.get(block=True, timeout=1)
-                dq.append(item)
-                yield item
-            except Empty:
-                pass
+            # Close streams.
+            process.stdout.close()
+            process.stderr.close()
 
-        return_code = process.poll()
+            return_code = process.wait()
 
-        # Make sure both threads have finished.
-        stdout_thread.join(timeout=1)
-        stderr_thread.join(timeout=1)
+            # Make sure both threads have finished.
+            stdout_thread.join(timeout=1)
+            stderr_thread.join(timeout=1)
 
         # Indicate that the process has finished as is no longer running.
         self.__process = None
