@@ -48,7 +48,7 @@ class ContinuousSubprocess:
         path: Optional[str] = None,
         max_error_trace_lines: int = 1000,
         *args,
-        **kwargs
+        **kwargs,
     ) -> Generator[str, None, None]:
         """
         Executes a command and yields a continuous output from the process.
@@ -77,9 +77,11 @@ class ContinuousSubprocess:
             shell=shell,
             cwd=path,
             *args,
-            **kwargs
+            **kwargs,
         ) as process:
-            logger.info(f'Successfully started the process to run "{self.__command_string}" command.')
+            logger.info(
+                f'Successfully started the process to run "{self.__command_string}" command.'
+            )
 
             # Indicate that the process has started and is now running.
             self.__process = process
@@ -101,7 +103,9 @@ class ContinuousSubprocess:
             )
             stderr_thread.start()
 
-            logger.info('Successfully started threads to capture stdout and stderr streams.')
+            logger.info(
+                'Successfully started threads to capture stdout and stderr streams.'
+            )
 
             # Run this block as long as our main process is alive or std streams queue is not empty.
             while (process.poll() is None) or (not q.empty()):
