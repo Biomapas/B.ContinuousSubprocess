@@ -12,7 +12,7 @@ on:
 jobs:
   install-test-build-push:
     runs-on: ubuntu-latest
-    container: nikolaik/python-nodejs:python3.8-nodejs14
+    container: biomapas/cicd-full:5.0.0
 
     steps:
       - uses: actions/checkout@v2
@@ -28,13 +28,14 @@ jobs:
       - name: Install
         run: |
           pip install . --upgrade
+          pip install -r b_continuous_subprocess_test/requirements.txt
           pip list
 
       - name: Test
         run: pytest --cov=b_continuous_subprocess b_continuous_subprocess_test --cov-fail-under=80
 
       - name: Install
-        run: pip install wheel twine
+        run: pip install wheel twine setuptools --upgrade
 
       - name: Build
         run: python setup.py sdist bdist_wheel

@@ -12,7 +12,7 @@ on:
 jobs:
   install-test:
     runs-on: ubuntu-latest
-    container: biomapas/cicd-full:0.0.2
+    container: biomapas/cicd-full:5.0.0
 
     steps:
       - uses: actions/checkout@v2
@@ -28,6 +28,7 @@ jobs:
       - name: Install
         run: |
           pip install . --upgrade
+          pip install -r b_continuous_subprocess_test/requirements.txt
           pip list
 
       - name: Test

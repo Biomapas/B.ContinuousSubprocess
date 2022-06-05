@@ -1,5 +1,9 @@
 # Release history
 
+### 0.4.0
+* Remove unnecessary testing dependencies.
+* Improve CI/CD pipelines.
+
 ### 0.3.2
 * More logging.
 * More debugging.
